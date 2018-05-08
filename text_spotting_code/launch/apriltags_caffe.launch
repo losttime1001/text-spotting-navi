@@ -10,13 +10,13 @@
     <arg name="tango" default="false" doc="subscribe tango image"/>      
 
     <!-- Camera -->
- 	<include if="$(arg camera)" file="$(find text_spotting_code)/launch/r200_rgbd.launch">
+ 	<include if="$(arg camera)" file="$(find text_spotting_code)/launch/r200_camera.launch">
  	</include>
  
  	<!-- AprilTags Detections -->i
     <remap from="image_rect" to="/camera/rgb/image_rect_color" />
     <remap from="camera_node/image/camera_info" to="/camera/rgb/camera_info" />
-    <include file="$(find apriltags_ros)/launch/apriltag_detector_node.launch">
+    <include file="$(find apriltags_ros_caffe)/launch/apriltag_detector_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>
@@ -25,7 +25,7 @@
  
  	<!-- Postprocessing node -->
  	<!--remap from="apriltags_postprocessing_node/apriltags_in" to="tag_detections" /-->
- 	<!--include file="$(find apriltags_ros)/launch/apriltags_postprocessing_node.launch">
+ 	<!--include file="$(find apriltags_ros_caffe)/launch/apriltags_postprocessing_node.launch">
  		<arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>

@@ -10,6 +10,7 @@ import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import Rect, Rects
 import caffe
+import time
 np.set_printoptions(threshold=np.inf)
 home = expanduser("~")
 
@@ -21,7 +22,7 @@ class CNN_node():
         self.bridge = CvBridge()
         self.cv_image = 0
         self.cv_img_crop = []
-        self.started = 0
+        self.start = 0
         #caffe params
         self.model = model = 'street_en_harvest'
         self.caffe_root = home +'/caffe'
@@ -40,6 +41,8 @@ class CNN_node():
         self.colorful_class_colors = self.colorful_class_colors.astype(np.uint8)
         self.switch_quad = 0
         self.switch_img = 1
+        self.time = 0
+        self.n = 1
         
     
     def img_cb(self, data):
@@ -47,6 +50,8 @@ class CNN_node():
         if self.switch_img is 0:
             return
         try:
+            self.start = data.header.stamp.secs #time.time()
+            print self.start
             self.cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
             #cv2.imwrite("test.jpg", self.cv_image)
             self.switch_quad = 1
@@ -72,6 +77,7 @@ class CNN_node():
 
         if self.switch_img is not 0 or self.switch_quad is not 0:
             return
+        i = 0
         for im in self.cv_img_crop:
         #im = self.cv_image
             im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
@@ -91,6 +97,12 @@ class CNN_node():
         #self.net_full_conv.blobs['data'].data[...] = im
         #out = self.net_full_conv.forward(data=np.asarray(transformed_image))
             out = self.net_full_conv.forward()
+            if i == 0:
+                now = rospy.get_rostime().secs    
+                self.time += (now - self.start)
+                print self.n, self.time
+                self.n += 1
+            i += 1
             top1 = out['prob'][0].argmax()
             if out['prob'][0][top1] >= 0.9:
                 print 'class: ',top1
