@@ -7,7 +7,7 @@
 	
     <!-- Run on local (laptop) -->
     <node if="$(arg local)" ns="$(arg veh)" pkg="text_spotting_code" type="ncs_node.py" name="ncs_node" output="screen" clear_params="true" required="true">
-	<arg name="camera_name" value="$(arg camera_name)"/>
+	<param name="camera_name" value="$(arg camera_name)"/>
     </node>
 
     <!-- Run on remote (vehicle) -->
