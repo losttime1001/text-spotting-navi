@@ -14,9 +14,11 @@ home = expanduser("~")
 import time
 class NCS_node():
     def __init__(self):
-        self.camera_name = rospy.get_param('~camera_name')
+        self.initial()
+        #self.camera_name = rospy.get_param('~camera_name')
         self.image_sub = rospy.Subscriber("/camera/rgb/image_rect_color", Image, self.img_cb)
-        self.quad_sub = rospy.Subscriber("/"+camera_name+"/quad_proposals", Rects, self.img_crop)
+        #self.quad_sub = rospy.Subscriber("/"+self.camera_name+"/quad_proposals", Rects, self.img_crop)
+        self.quad_sub = rospy.Subscriber("/atlas/quad_proposals", Rects, self.img_crop)
         self.image_pub = rospy.Publisher('gray', Image, queue_size=10)
         self.bridge = CvBridge()
         self.cv_image = 0
@@ -24,13 +26,18 @@ class NCS_node():
         self.switch_quad = 0
         self.switch_img = 1
         #NCS params
+        #self.model = model = 'street_en_harvest'
+        #self.start = 0
+        #self.time = 0
+        #self.n = 1
+
+    def initial(self):
         self.model = model = 'street_en_harvest'
-        self.initial()
         self.start = 0
         self.time = 0
         self.n = 1
 
-    def initial(self):
+        self.camera_name = rospy.get_param('~camera_name')
         self.device_work = False
         mvnc.SetGlobalOption(mvnc.GlobalOption.LOG_LEVEL, 2)
         self.deviceCheck()
@@ -65,6 +72,7 @@ class NCS_node():
             return
         try:
             self.start = data.header.stamp.secs
+            print self.start
             self.cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
             self.switch_quad = 1
             self.switch_img = 0
@@ -120,8 +128,8 @@ class NCS_node():
         self.switch_img = 1
     
 def main(args):
+    rospy.init_node('NCS_node', anonymous = False)
     ic = NCS_node()
-    rospy.init_node('NCS_node', anonymous = True)
     try:
         while(1):
             ic.ncs()
