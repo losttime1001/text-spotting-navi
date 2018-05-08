@@ -24,9 +24,9 @@
         <node if="$(arg local)" ns="$(arg veh)" pkg="text_spotting_code" type="cnn_node.py" name="cnn_node" output="screen" clear_params="true" required="true">
         </node>
 
-        <!-- Run on remote (vehicle) -->
-        <include unless="$(arg local)" file="$(find duckietown)/machines"/>
-        <node unless="$(arg local)" ns="$(arg veh)" machine="$(arg veh)" pkg="text_spotting_code" type="cnn_node.py" output="screen" clear_params="true" required="true">
+    <!-- Run on remote (vehicle) -->
+    <include unless="$(arg local)" file="$(find duckietown)/machines"/>
+        <node unless="$(arg local)" ns="$(arg veh)" machine="$(arg veh)" pkg="text_spotting_code" type="cnn_node.py" name="cnn_node" output="screen" clear_params="true" required="true">
         </node>	
 
 
