@@ -50,8 +50,7 @@ class CNN_node():
         if self.switch_img is 0:
             return
         try:
-            self.start = data.header.stamp.secs #time.time()
-            print self.start
+            self.start = time.time()
             self.cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
             #cv2.imwrite("test.jpg", self.cv_image)
             self.switch_quad = 1
@@ -97,22 +96,21 @@ class CNN_node():
         #self.net_full_conv.blobs['data'].data[...] = im
         #out = self.net_full_conv.forward(data=np.asarray(transformed_image))
             out = self.net_full_conv.forward()
-            if i == 0:
-                now = rospy.get_rostime().secs    
-                self.time += (now - self.start)
+            if i == 0:    
+                self.time += (time.time() - self.start)
                 print self.n, self.time
                 self.n += 1
             i += 1
             top1 = out['prob'][0].argmax()
-            if out['prob'][0][top1] >= 0.9:
-                print 'class: ',top1
+            #if out['prob'][0][top1] >= 0.9:
+            #    print 'class: ',top1
     
         self.cv_img_crop = []
         self.switch_img = 1    
 
 def main(args):
-    rospy.init_node('CNN_node', anonymous = True)        
     ic = CNN_node()
+    rospy.init_node('CNN_node', anonymous = True)        
     try:
         while (1):
             ic.cnn()
