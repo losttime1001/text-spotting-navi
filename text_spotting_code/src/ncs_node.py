@@ -14,8 +14,9 @@ home = expanduser("~")
 import time
 class NCS_node():
     def __init__(self):
+        self.camera_name = rospy.get_param('~camera_name')
         self.image_sub = rospy.Subscriber("/camera/rgb/image_rect_color", Image, self.img_cb)
-        self.quad_sub = rospy.Subscriber("/atlas/quad_proposals", Rects, self.img_crop)
+        self.quad_sub = rospy.Subscriber("/"+camera_name+"/quad_proposals", Rects, self.img_crop)
         self.image_pub = rospy.Publisher('gray', Image, queue_size=10)
         self.bridge = CvBridge()
         self.cv_image = 0
@@ -75,7 +76,6 @@ class NCS_node():
         #print "Quad callback"
         if self.switch_quad is 0:
             return
-        #print "Quad callback"
         for quad in quads.rects:
             #print quad
             img = self.cv_image[quad.y:quad.y+quad.h, quad.x:quad.x+quad.w]
@@ -84,7 +84,7 @@ class NCS_node():
 
     def ncs(self):
         if type(self.cv_image) == np.int:
-            print "CNN"
+            print "No image receive."
             return
 
         if self.switch_img is not 0 or self.switch_quad is not 0:
