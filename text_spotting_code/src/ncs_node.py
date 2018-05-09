@@ -41,7 +41,7 @@ class NCS_node():
         self.device_work = False
         mvnc.SetGlobalOption(mvnc.GlobalOption.LOG_LEVEL, 2)
         self.deviceCheck()
-        self.dim = (32, 100)
+        self.dim = (100, 32) #(width, height)
 
     def deviceCheck(self):
         #check device is plugged in
@@ -72,7 +72,7 @@ class NCS_node():
             return
         try:
             self.start = data.header.stamp.secs
-            print self.start
+            #print self.start
             self.cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
             self.switch_quad = 1
             self.switch_img = 0
@@ -100,13 +100,15 @@ class NCS_node():
         i = 0
         for im in self.cv_img_crop:
         #im = self.cv_image
-            im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+            im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+            im = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
             if im is None:
                 break
             im = cv2.resize(im, self.dim)         
-            im = im/255.0
-            im -= np.mean(im)
             im = im.astype(np.float32)
+            #im = im/255.0
+            #im -= np.mean(im)
+            #im = im.astype(np.float32)
 
             # Send the image to NCS
             self.graph.LoadTensor(im.astype(np.float16), 'user object')
@@ -115,7 +117,7 @@ class NCS_node():
             if i == 0:
                 now = rospy.get_rostime().secs
                 self.time += (now-self.start)
-                print self.n, self.time
+                #print self.n, self.time
                 self.n += 1
             i += 1 
             #order = output.argsort()[::-1][:4]
@@ -123,6 +125,7 @@ class NCS_node():
 
             if output[top1] >= 0.9:
                 print 'class: ',top1
+                print output[top1] 
 
         self.cv_img_crop = []
         self.switch_img = 1
