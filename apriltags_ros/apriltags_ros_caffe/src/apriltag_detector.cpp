@@ -150,7 +150,7 @@ namespace apriltags_ros{
 	
 	  //image_pub_.publish(cv_crop->toImageMsg());
 	  //visualization
-      cv::rectangle(cv_ptr->image, quad_proposals[qi], cv::Scalar(255,0,0));
+      cv::rectangle(cv_ptr->image, quad_proposals[qi], cv::Scalar(0,255,0),5);
       quad_proposal_array.rects.push_back(quad_proposal);
     }
 
